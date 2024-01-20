@@ -288,10 +288,10 @@ function convertToCP866(s: string): Uint8Array {
 }
 
 export class Display {
-  private title = 'B4CKSP4CE';
-  private author = 'Media-Radio';
-  private titlePosition = 0;
-  private authorPosition = 0;
+  private firstLine = 'B4CKSP4CE';
+  private secondLine = 'Media-Radio';
+  private firstLinePosition = 0;
+  private secondLinePosition = 0;
   private serialPort: SerialPort;
 
   constructor(private readonly comPort: string) {
@@ -302,19 +302,19 @@ export class Display {
     });
   }
 
-  setTitle(text: string): void {
-    this.title = text;
+  setFirstLine(text: string): void {
+    this.firstLine = text;
     this.resetPosition();
   }
 
-  setAuthor(text: string): void {
-    this.author = text;
+  setSecondLine(text: string): void {
+    this.secondLine = text;
     this.resetPosition();
   }
 
   resetPosition(): void {
-    this.titlePosition = 0;
-    this.authorPosition = 0;
+    this.firstLinePosition = 0;
+    this.secondLinePosition = 0;
   }
 
   static getScrolledString(text: string, position: number): string {
@@ -334,12 +334,12 @@ export class Display {
   display(): void {
     (async () => {
       const firstString = Display.getScrolledString(
-        this.title,
-        this.titlePosition++,
+        this.firstLine,
+        this.firstLinePosition++,
       );
       const secondString = Display.getScrolledString(
-        this.author,
-        this.authorPosition++,
+        this.secondLine,
+        this.secondLinePosition++,
       );
 
       await serialWrite(this.serialPort, Uint8Array.from([0x1f, 0x24, 1, 1]));

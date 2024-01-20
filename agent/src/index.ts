@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import { MediaEvents } from './media-events';
 import { getRequiredEnv } from './utils';
 import { Display } from './display';
+import {DisplayAnimator} from "./display-animator";
 
 config();
 const logger = pino({
@@ -18,18 +19,19 @@ async function main(): Promise<void> {
   await me.init();
   display.run();
 
-  display.setAuthor('Standby');
-  display.setTitle('AirPlay & Bluetooth');
+  const displayAnimator = new DisplayAnimator(display);
+
+  displayAnimator.start();
 
   me.events.on('stopped', () => {
-    display.setAuthor('Standby');
-    display.setTitle('AirPlay & Bluetooth');
+    displayAnimator.start();
     logger.debug('Stopped');
   });
 
   me.events.on('metadata', (metadata) => {
-    display.setAuthor(metadata.track.artist?.join(', ') ?? 'Various artists');
-    display.setTitle(metadata.track.title ?? 'Unknown');
+    displayAnimator.stop();
+    display.setFirstLine(metadata.track.title ?? 'Unknown');
+    display.setSecondLine(metadata.track.artist?.join(', ') ?? 'Various artists');
     logger.debug('Metadata updated');
   });
 }
