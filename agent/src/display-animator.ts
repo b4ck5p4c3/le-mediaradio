@@ -202,8 +202,10 @@ export class DisplayAnimator {
   }
 
   start(): void {
-    this.running = true;
-    this.drawFrame();
+    if (!this.running) {
+      this.running = true;
+      this.drawFrame();
+    }
   }
 
   drawFrame(): void {
